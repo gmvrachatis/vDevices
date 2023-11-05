@@ -1,6 +1,7 @@
 
 
-![image](https://github.com/gmvrachatis/vDevices/assets/66122405/ce9aefa4-935b-4102-9d72-d6a86d18532e)
+![image](https://github.com/gmvrachatis/vDevices/assets/66122405/b0d558fe-1e18-42a5-b403-9953889c198a)
+
 
 
 
