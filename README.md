@@ -14,6 +14,7 @@ The following arguments are:
 It can be changed while it is running by changing the following variables with python commands
 
 **The variables are:**
+
 ![image](https://github.com/gmvrachatis/vDevices/assets/66122405/351f5810-c896-49d6-a8d4-054d81341d02)
 
 
