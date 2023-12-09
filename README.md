@@ -6,7 +6,7 @@
 
 
 
-![image](https://github.com/gmvrachatis/vDevices/assets/66122405/866c6893-fe2f-43e9-8df1-e9fc6344afa7)
+![image](https://github.com/gmvrachatis/vDevices/assets/66122405/41e569d2-1730-4715-a5df-be6b5e149be1)
 
 
 
