@@ -12,7 +12,7 @@ The following arguments are:
 ![image](https://github.com/gmvrachatis/vDevices/assets/66122405/ed597ebb-5b1a-40e8-8ce9-c0f81c8dc4b4)
 
 
-(Example) <code> python vThermostat -b broker.emqx.io -r Bedroom1 -n b1Thermostat </code>
+(Example) <code> python vThermostat -b broker.emqx.io </code>
 
 
 It can be changed while it is running by changing the following variables with python commands
