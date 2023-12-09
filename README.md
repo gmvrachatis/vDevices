@@ -12,7 +12,6 @@ The following arguments are:
 
 (Example) <code> python vThermostat -b broker.emqx.io -r Bedroom1 -n b1Thermostat </code>
 
-</n></n> </n> </n>
 
 It can be changed while it is running by changing the following variables with python commands
 
