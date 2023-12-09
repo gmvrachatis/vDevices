@@ -12,6 +12,7 @@ import time
 flag_auto="OFF"
 flag_realtime="OFF"
 video=None
+sleep=60
 
 
 def get_uid():
@@ -198,10 +199,6 @@ try:
 except:
         power=power
     
-#variables = ['broker','camera-name','port','room','power','idle-power','first-time','framerate','resolution-width','resolution-height','video','min-area'] 
-
-
-#variables_check = [broker,camera_name,port,room,power,idle_power,first_time,framerate,resolution_width,resolution_height,video,min_area] 
 
 
 
@@ -224,87 +221,70 @@ save()
 
 
 topics={    "topic_alarm_all_minus_outside":"cameras/outside/flag" if room==None else None,
-            "topic_alarm_all":"cameras/*/flag",
-            "topic_alarm_room":"cameras/room"+room+"/*/flag" if not room==None else None,
-            "topic_camera_feed":"cameras/"+ room +"/"+ camera_name+"/trigered" if not room==None else "device/cameras/outside/"+ camera_name+"/trigered",
-            "topic_camera_realtime_feed":"cameras/"+ room +"/"+ camera_name+"/feed" if not room==None else "device/cameras/outside/"+ camera_name +"/feed",
-            "topic_camera_realtime_feed_flag":"cameras/"+ room+"/"+ camera_name+"/feed" if not room==None else "device/cameras/outside/"+ camera_name+"/feed"
+            "topic_alarm_all":"cameras/+/flag",
+            "topic_alarm_room":"cameras/room"+room+"/+/flag" if not room==None else None,
+            "topic_camera_feed":"cameras/"+ room +"/"+ camera_name+"/trigered" if not room==None else "cameras/outside/"+ camera_name+"/trigered",
+            "topic_camera_realtime_feed":"cameras/"+ room +"/"+ camera_name+"/feed" if not room==None else "cameras/outside/"+ camera_name +"/feed",
+            "topic_camera_realtime_feed_flag":"cameras/"+ room+"/"+ camera_name+"/feed" if not room==None else "cameras/outside/"+ camera_name+"/feed"
         }
 
 
-
 def vCamera(client):
-    global flag_auto,flag_realtime,framerate,resolution_height,resolution_width,video ,min_area
+    global flag_auto, flag_realtime, framerate, resolution_height, resolution_width, video, min_area
     # loop over the frames of the video, and store corresponding information from each frame
     vs = cv2.VideoCapture(video)
     firstFrame = None
-    framecounter = 0
     frame_delay = 1 / framerate
-    frame =None
-
-    #repeating and finding movement
+    frame = None
+    # repeating and finding movement
     while True:
         start_time = time.time()
-        frame = vs.read()
-        frame = frame if video is None else frame[1]
-       
-        
-        # if the frame can not be grabbed, then restart the video
-        if frame is None:
+        ret, frame = vs.read()
+
+        # If the frame can not be grabbed, then restart the video
+        if not ret:
             vs.release()
             vs = cv2.VideoCapture(video)
-            frame = vs.read()
-            frame = frame if video is None else frame[1]
-     
-
-        
-
-        framecounter = framecounter+1
-        
-        if flag_realtime== True:    
-            frame_processing_time = time.time() - start_time
-            client.publish(topics["topic_camera_realtime_feed"],frame)
-            if frame_processing_time < frame_delay:
-                time.sleep(frame_delay - frame_processing_time)
             continue
 
-        elif flag_auto==True:
+        if flag_realtime == True:
+            _, frame_to_jpg=cv2.imencode('.jpg', frame)
+            frame_bytes = frame_to_jpg.tobytes()
+            client.publish(topics["topic_camera_realtime_feed"], frame_bytes)
 
+        if flag_auto == True:
             gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
             gray = cv2.GaussianBlur(gray, (21, 21), 0)
 
-            # if the first frame is None, initialize it
+            # If the first frame is None, initialize it
             if firstFrame is None:
                 firstFrame = gray
                 continue
 
-            # compute the absolute difference between the current frame and first frame
+            # Compute the absolute difference between the current frame and the first frame
             frameDelta = cv2.absdiff(firstFrame, gray)
             thresh = cv2.threshold(frameDelta, 25, 255, cv2.THRESH_BINARY)[1]
 
-            # dilate the thresholded image to fill in holes, then find contours on thresholded image
+            # Dilate the thresholded image to fill in holes, then find contours on thresholded image
             thresh = cv2.dilate(thresh, None, iterations=2)
-            cnts = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
-            cnts = cnts[0] if imutils.is_cv2() else cnts[1]
+            cnts, _ = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-            # loop over the contours identified
+            # Loop over the contours identified
             contourcount = 0
             for c in cnts:
-                contourcount =  contourcount + 1
-            
-            # if the contour is too small, ignore it
-                if cv2.contourArea(c) < min_area:
-                    frame_processing_time = time.time() - start_time
-                    if frame_processing_time < frame_delay:
-                        time.sleep(frame_delay - frame_processing_time)
-                    continue
+                contourcount = contourcount + 1
 
-            #!!!actions!!!!!!!!   
-                frame_processing_time = time.time() - start_time
-                client.publish(topics["topic_camera_feed"],frame)
-                if frame_processing_time < frame_delay:
-                    time.sleep(frame_delay - frame_processing_time)
-                                
+                # If the contour is too small, ignore it
+                if cv2.contourArea(c) < min_area:
+                    continue
+                _, frame_to_jpg=cv2.imencode('.jpg', frame)
+                frame_bytes = frame_to_jpg.tobytes()
+                client.publish(topics["topic_camera_feed"], frame_bytes)
+                break
+
+        frame_processing_time = time.time() - start_time
+        if frame_processing_time < frame_delay:
+            time.sleep(frame_delay - frame_processing_time)
 
 
 
@@ -355,13 +335,30 @@ def on_message(client, userdata, msg):
         flag_realtime=True
 
 
+
+def power_management(client):
+    global power,sleep
+    time.sleep(sleep)
+    client.publish("power/used",float(3.6 * 10**6 *power))
+
+
+
+
+
 def run():
     client = connect_mqtt()
     client.loop_start()
     subscribe(client,topics)
     client.on_message=on_message
+    threads = []   
     t = continuous_threading.ContinuousThread(target=vCamera,args=(client,))
+    threads.append(t)
     t.start()
+    t= continuous_threading.PausableThread(target=power_management,args=(client, ))
+    threads.append(t)
+    t.start()
+
+
     while True:
         #Manual Changes
         user_input=input()
