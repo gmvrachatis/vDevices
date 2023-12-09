@@ -1,4 +1,4 @@
-As all vDevices, vCamera is configured by arguments
+As all vDevices, vThermostat is configured by arguments
 
 The following arguments are:
 
