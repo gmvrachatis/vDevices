@@ -4,7 +4,8 @@
 
 
 
-![image](https://github.com/gmvrachatis/vDevices/assets/66122405/cbe33c5f-06f3-42f0-b4e9-721bee79d9ad)
+![image](https://github.com/gmvrachatis/vDevices/assets/66122405/18eabca4-e845-49f3-8ecb-19499b36d110)
+
 
 
 
