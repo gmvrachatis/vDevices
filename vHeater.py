@@ -9,8 +9,8 @@ import continuous_threading
 
 
 idle_power=0
-flag="OFF"
-
+flag=False
+timer=60
 
 #CREATE UNiQuE ID
 def get_uid():
@@ -53,7 +53,7 @@ except IOError:
 
 #create data storing file and reading from it
 filename = 'data.txt'
-variables = ['broker','port','room','power','idle_power','first_time']  # List of variable names
+variables = ['broker','port','room','power','idle_power','timer','first_time']  # List of variable names
 
 try:
     file = open(filename, 'a+')
@@ -92,6 +92,11 @@ try:
         idle_power = int(data['idle_power'])
     except:
         idle_power= 0
+    try:
+        timer=int(data['timer'])
+    except:
+        timer=60
+
     first_time=bool(data['first_time'])
     # Perform any necessary operations with the variables
 
@@ -114,13 +119,14 @@ if first_time:
     ap.add_argument("-r", "--room",type=str,required=True ,help="id of the room that the device is located")
     ap.add_argument("-P", "--power", type=int,default=9000, help="Add power in BTU per h")
     ap.add_argument("-iP", "--idle_power", type=int,default=0, help="Add power in W/h")
+    ap.add_argument("-t", "--timer", type=int,default=60, help="Timer that counts when to display power usage")
 else:
     ap.add_argument("-b", "--broker",default=broker, type=str,help="Broker IPv4")
     ap.add_argument("-p", "--port",default=port,type=int,help="Broker listening port")
     ap.add_argument("-r", "--room",type=str,default=room_name, help="id of the room that the device is located")
     ap.add_argument("-P", "--power", type=int,default=BTUh, help="Add power in BTUh")
     ap.add_argument("-iP", "--idle_power", type=int,default=0, help="Add power in W/h")
-
+    ap.add_argument("-t", "--timer", type=int,default=timer, help="Timer that counts when to display power usage")
 
 args = vars(ap.parse_args())
 
@@ -140,13 +146,15 @@ if args["power"]!=None:
 if args["idle_power"]!=None:
     idle_power=args["idle_power"]
 
+if args["timer"]!=None:
+    timer=args["timer"]
 
 def save():
     #Recall changed data
     filename='data.txt'
-    variables = ['broker','port','room','power','idle_power','first_time']
+    variables = ['broker','port','room','power','idle_power','timer','first_time']
     data_to_save = {}  # Create an empty dictionary to store the variables
-    variables_check = [broker,port,room_name,BTUh,idle_power,first_time]
+    variables_check = [broker,port,room_name,BTUh,idle_power,timer,first_time]
     # Get input for each variable and store in the dictionary
     for counter in range(len(variables)):
         data_to_save[variables[counter]] = variables_check[counter]
@@ -157,9 +165,7 @@ def save():
 
 
 topics={    "topic_room_thermostat": room_name+"/thermostat/flag",
-            "topic_heat":room_name+"/thermostat/heaters/flag",
-            "topic_heat_working_power":room_name+"/thermostat/heaters/working/power",
-            "topic_heat_idle_power":room_name+"/thermostat/heaters/idle/power"        
+            "topic_heat":room_name+"/thermostat/heaters/flag"
        }
 
 
@@ -175,13 +181,12 @@ def on_message(client, userdata, msg):
         topic = msg.topic
         msg_string = msg.payload.decode()
         if topic == topics["topic_room_thermostat"] :
-                client.publish(topics["topic_heat_working_power"],BTUh)
-                client.publish(topics["topic_heat_idle_power"],idle_power)            
+                client.publish(room_name+"/thermostat/heaters/btu",BTUh)         
         elif topic == topics["topic_heat"]:
             if msg_string=="ON":
-                flag="ON"
+                flag=True
             elif msg_string=="OFF":
-                flag="OFF"
+                flag=False
 
 def connect_mqtt()-> mqtt_client:
     global flag
@@ -194,8 +199,7 @@ def connect_mqtt()-> mqtt_client:
         #Close the device
         global flag
         flag ="OFF"
-        client.publish(topics["power"], -BTUh)
-        client.publish(topics["idle_power"], -idle_power)
+        client.publish(room_name+"/thermostat/heaters/btu", -BTUh)
         
     # Set Connecting Client ID
     client = mqtt_client.Client(uid)
@@ -206,16 +210,25 @@ def connect_mqtt()-> mqtt_client:
 
 
 def heater(client):
-    global flag ,BTUh,idle_power
+    global flag ,BTUh,idle_power,timer
+    
     while True:
+        power1=0
+        power2=0
+        time.sleep(1)
         if flag:
             #generate_heat
-            time.sleep(10)
+            power1=BTUh*3.412141633/3600
             print("working")
         else:
             #go idle
-            time.sleep(10)
+            power2=idle_power
             print("idle")
+        sleep_counter+=1
+        if sleep_counter==timer:
+            power=power1+power2
+            client.publish("power/used", power)
+            sleep_counter=0
 
 
 
