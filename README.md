@@ -18,8 +18,7 @@ It can be changed while it is running by changing the following variables with p
 
 
 
-The topics that subscribes and publishes are:
-
+**TOPICS :**
 
 ![image](https://github.com/gmvrachatis/vDevices/assets/66122405/cfe91e9c-cb33-42df-a96d-2678179b5c91)
 
