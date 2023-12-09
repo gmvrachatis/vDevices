@@ -11,7 +11,9 @@ It can be changed while it is running by changing the following variables with p
 
 
 
-![image](https://github.com/gmvrachatis/vDevices/assets/66122405/3e93dea7-8db9-4534-89cd-4392becea734)
+
+![image](https://github.com/gmvrachatis/vDevices/assets/66122405/2b929805-830d-4b87-a774-b7e20cf84b38)
+
 
 
 
