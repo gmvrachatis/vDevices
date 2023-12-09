@@ -7,7 +7,8 @@ The following arguments are:
 The topic that subscribes and publishes are:
 
 
-![image](https://github.com/gmvrachatis/vDevices/assets/66122405/a019c434-0d56-45be-bec4-790ade13f6ba)
+
+![image](https://github.com/gmvrachatis/vDevices/assets/66122405/659c09b7-5b45-4926-87b0-261b41907e5d)
 
 
 It can be changed while it is running by changing the following variables with python commands
