@@ -8,7 +8,7 @@ The following arguments are:
 
 ![image](https://github.com/gmvrachatis/vDevices/assets/66122405/e36f75d8-82ae-4452-b025-c4f4597fb07a)
 
-(Example) <code> python vThermostat -b broker.emqx.io -n cooler1 </code>
+(Example) <code> python vCooler.py -b broker.emqx.io -n cooler1 </code>
 
 
 It can be changed while it is running by changing the following variables with python commands
