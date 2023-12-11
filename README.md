@@ -1,7 +1,7 @@
 vFridge is a device which is designed to simulate the operation of a smart refrigerator. Using the library it has the ability to simulate a multi-zone refrigerator. Using the same thermodynamic function as vThermostat and seeing the number of zones that wish to reduce its temperature it can separate the total thermal energy of the appliance and simulate the temperature reduction of each zone separately. 
 
 
-As all vDevices, vCamera is configured by arguments
+As all vDevices, vFridge is configured by arguments
 
 The following arguments are:
 
