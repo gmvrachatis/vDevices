@@ -18,3 +18,12 @@ These simulated devices faithfully replicate the behavior and operations of thei
 - **vSwitch** is a device that is designed to simulate the operation of a smart switch.
 
 - **vController** is a device that is designed to simulate the operation of a recorder and/or a power management unit.
+
+<br><br>
+vDevice architecture and features:
+1.	The vDevices are available on dockerhub for use with GNS3 (gmvra/vcamera, gmvra/vcontroller and more) and the code is on github
+2.	The vDevices use the newest version of Alpine Linux.
+3.	Some arguments may be required while initializing the vDevices
+4.	They have the ability to save their state and at any time and it is needed to stop their operation and they can resume where they left off.
+5.	It is possible to change device variables with python commands.
+6.	In order to maintain simplicity and conserve resources consumed by each device, no security measures are used
