@@ -203,7 +203,7 @@ def vcontroller(client) :
             
         if power_management:
             subscribe_to_power(client)
-            print("Power Consumed in "+str(timer)+" seconds: "+str(power)+ " W")
+            print("Energy Consumed in "+str(timer)+" seconds: "+str(power)+ " J")
             power=0
         
         time.sleep(timer)
