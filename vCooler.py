@@ -169,9 +169,7 @@ save()
 
 topics={    
             "topic_room_thermostat": room_name+"/thermostat/flag",
-            "topic_coolers":room_name+"/thermostat/coolers/flag",
-            "topic_cooler_working_power":room_name+"/thermostat/coolers/working/power",
-            "topic_cooler_idle_power":room_name+"/thermostat/coolers/idle/power"        
+            "topic_coolers":room_name+"/thermostat/coolers/flag"
        }
 
 
@@ -192,7 +190,6 @@ def on_message(client, userdata, msg):
         msg_string = msg.payload.decode()
         if topic == room_name+"/thermostat/flag":
             client.publish(room_name+"/thermostat/coolers/working/power",BTUc)
-            client.publish(room_name+"/thermostat/coolers/idle/power" ,idle_power)
         elif topic == topics["topic_coolers"]:
             if msg_string=="ON":
                 flag=True
@@ -238,7 +235,6 @@ def cooler(client) :
             print("idle")
         sleep_counter+=1
         if sleep_counter==timer:
-            
             client.publish("power/used", power)
             sleep_counter=0
             power=0
