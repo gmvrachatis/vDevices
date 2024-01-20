@@ -177,11 +177,12 @@ def subscribe(client: mqtt_client,topics):
             client.subscribe(topics[topic])
     
 def on_message(client, userdata, msg):
-        global BTUh, flag ,idle_power 
+        global BTUh, flag ,idle_power ,room_name
         topic = msg.topic
         msg_string = msg.payload.decode()
         if topic == topics["topic_room_thermostat"] :
-                client.publish(room_name+"/thermostat/heaters/btu",BTUh)         
+                client.publish(room_name+"/thermostat/heaters/btu",BTUh)
+		client.publish(room_name+"/thermostat/heaters/idle/power" ,idle_power)
         elif topic == topics["topic_heat"]:
             if msg_string=="ON":
                 flag=True
