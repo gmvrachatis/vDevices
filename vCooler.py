@@ -213,7 +213,7 @@ def connect_mqtt()-> mqtt_client:
     return client
 
 def cooler(client) :
-    global flag ,BTUh,idle_power,timer
+    global flag ,BTUc,idle_power,timer
     sleep_counter=0
     power=0
     while True:
