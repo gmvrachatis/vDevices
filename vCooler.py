@@ -213,18 +213,26 @@ def connect_mqtt()-> mqtt_client:
     return client
 
 def cooler(client) :
-    global flag ,BTUc,idle_power
+    global flag ,BTUh,idle_power,timer
+    sleep_counter=0
+    power=0
     while True:
-        if flag == "ON":
+      
+        time.sleep(1)
+        if flag:
             #generate_heat
-            time.sleep(10)
+            power+=BTUc*3.412141633/3600
             print("working")
-            
-        elif flag =="OFF":
+        else:
             #go idle
-            time.sleep(10)
+            power+=idle_power
             print("idle")
-
+        sleep_counter+=1
+        if sleep_counter==timer:
+            
+            client.publish("power/used", power)
+            sleep_counter=0
+            power=0
 
 def run():
     global flag
