@@ -207,9 +207,10 @@ def connect_mqtt()-> mqtt_client:
         else:
             print("Failed to connect, return code %d\n", rc)
     def on_disconnect(client, userdata, flags, rc):
-
-        client.publish(topics["power"], -power)
-        client.publish(topics["idle_power"], -idle_power)
+        #Close the device
+        global flag
+        flag ="OFF"
+        client.publish(room_name+"/thermostat/heaters/btu", -BTUh)
         
     # Set Connecting Client ID
     client = mqtt_client.Client(uid)
