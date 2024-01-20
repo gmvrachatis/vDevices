@@ -211,25 +211,24 @@ def connect_mqtt()-> mqtt_client:
 
 def heater(client):
     global flag ,BTUh,idle_power,timer
-    
+    sleep_counter=0
+    power=0
     while True:
-        power1=0
-        power2=0
+      
         time.sleep(1)
         if flag:
             #generate_heat
-            power1=BTUh*3.412141633/3600
+            power+=BTUh*3.412141633/3600
             print("working")
         else:
             #go idle
-            power2=idle_power
+            power+=idle_power
             print("idle")
         sleep_counter+=1
         if sleep_counter==timer:
-            power=power1+power2
             client.publish("power/used", power)
             sleep_counter=0
-
+            power=0
 
 
 
