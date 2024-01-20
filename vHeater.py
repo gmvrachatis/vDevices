@@ -182,7 +182,6 @@ def on_message(client, userdata, msg):
         msg_string = msg.payload.decode()
         if topic == topics["topic_room_thermostat"] :
                 client.publish(room_name+"/thermostat/heaters/btu",BTUh)
-		client.publish(room_name+"/thermostat/heaters/idle/power" ,idle_power)
         elif topic == topics["topic_heat"]:
             if msg_string=="ON":
                 flag=True
