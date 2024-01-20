@@ -120,17 +120,17 @@ ap = argparse.ArgumentParser()
 if first_time:
     ap.add_argument("-b", "--broker",required=True, type=str,help="Broker IPv4")
     ap.add_argument("-p", "--port",default=1883,type=int,help="Broker listening port")
-    ap.add_argument("-r", "--room",type=str,required=True ,help="id of the room that the device is located")
-    ap.add_argument("-P", "--power", type=int,default=0, help="Add power in W/h")
+    ap.add_argument("-r", "--room",type=str,required=True ,help="uid or unique name of the room that the device is located")
+    ap.add_argument("-P", "--power", type=int,default=0, help="Add power in W (per sec)")
     ap.add_argument("-s", "--sleep", type=int,default=10, help="number of seconds for sleep of the thermostat")
-    ap.add_argument("-v", "--volume", type=int,default=40, help="Add Room volume for temperature changes calculation in m^3")
+    ap.add_argument("-v", "--volume", type=int,default=40, help="Add Room volume for temperature changes calculation (in m^3)")
 else:
     ap.add_argument("-b", "--broker",default=broker, type=str,help="Broker IPv4")
     ap.add_argument("-p", "--port",default=port,type=int,help="Broker listening port")
-    ap.add_argument("-r", "--room",type=str,default=room_name , help="id of the room that the device is located")
-    ap.add_argument("-P", "--power", type=int, help="Add power in W/s")
+    ap.add_argument("-r", "--room",type=str,default=room_name , help="uid or unique name of the room that the device is located")
+    ap.add_argument("-P", "--power", type=int, help="Add power in W (per sec)")
     ap.add_argument("-s", "--sleep", type=int,default=sleep, help="number of seconds for sleep of the thermostat")
-    ap.add_argument("-v", "--volume", type=int,default=room_volume, help="Add Room volume for temperature changes calculation in m^3")
+    ap.add_argument("-v", "--volume", type=int,default=room_volume, help="Add Room volume for temperature changes calculation (in m^3)")
 
 
 args = vars(ap.parse_args())
