@@ -8,7 +8,8 @@ import continuous_threading
 
 thermostat_flag =False
 flag=False
- 
+timer=60
+
 #CREATE UNiQuE ID
 def get_uid():
 	current_datetime = datetime.datetime.now()
@@ -51,7 +52,7 @@ except IOError:
 
 #create data storing file and reading from it
 filename = 'data.txt'
-variables = ['broker','port','room','power','idle_power','first_time']  # List of variable names
+variables = ['broker','port','room','power','idle_power','timer','first_time']  # List of variable names
 
 try:
     file = open(filename, 'a+')
@@ -92,6 +93,10 @@ try:
         idle_power= 0
     first_time=bool(data['first_time'])
     # Perform any necessary operations with the variables
+    try:
+        timer=int(data['timer'])
+    except:
+        timer=60
 
 except IOError:
     print("An error occurred while opening or creating the file.")
@@ -112,13 +117,14 @@ if first_time:
     ap.add_argument("-r", "--room",type=str,required=True ,help="id of the room that the device is located")
     ap.add_argument("-P", "--power", type=int,default=9000, help="Add power in BTU per h")
     ap.add_argument("-iP", "--idle_power", type=int,default=0, help="Add power in W/h")
+    ap.add_argument("-t", "--timer", type=int,default=60, help="Timer that counts when to send power usage")
 else:
     ap.add_argument("-b", "--broker",default=broker, type=str,help="Broker IPv4")
     ap.add_argument("-p", "--port",default=port,type=int,help="Broker listening port")
     ap.add_argument("-r", "--room",type=str,default=room_name,help="id of the room that the device is located")
     ap.add_argument("-P", "--power", type=int,default=BTUc, help="Add power in W/s")
     ap.add_argument("-iP", "--idle_power", type=int,default=idle_power, help="Add power in W/s")
-
+    ap.add_argument("-t", "--timer", type=int,default=timer, help="Timer that counts when to send power usage")
 
 args = vars(ap.parse_args())
 
@@ -141,12 +147,15 @@ if args["power"]!=None:
 if args["idle_power"]!=None:
     idle_power=args["idle_power"]
 
+if args["timer"]!=None:
+    timer=args["timer"]
+
 def save():
     #Recall changed data
     filename='data.txt'
-    variables = ['broker','port','room','power','idle_power','first_time']
+    variables = ['broker','port','room','power','idle_power','timer','first_time']
     data_to_save = {}  # Create an empty dictionary to store the variables
-    variables_check = [broker,port,room_name,BTUc,idle_power,first_time]
+    variables_check = [broker,port,room_name,BTUc,idle_power,timer,first_time]
     # Get input for each variable and store in the dictionary
     for counter in range(len(variables)):
         data_to_save[variables[counter]] = variables_check[counter]
@@ -178,12 +187,12 @@ def subscribe(client: mqtt_client,topics):
             client.subscribe(topics[topic])
     
 def on_message(client, userdata, msg):
-        global BTUc, flag ,idle_power ,thermostat_flag 
+        global BTUc, flag ,idle_power ,thermostat_flag ,room_name
         topic = msg.topic
         msg_string = msg.payload.decode()
-        if topic == topics["topic_room_thermostat"]:
-            client.publish(topics["topic_cooler_working_power"],BTUc)
-            client.publish(topics["topic_cooler_idle_power"],idle_power)
+        if topic == room_name+"/thermostat/flag":
+            client.publish(room_name+"/thermostat/coolers/working/power",BTUc)
+            client.publish(room_name+"/thermostat/coolers/idle/power" ,idle_power)
         elif topic == topics["topic_coolers"]:
             if msg_string=="ON":
                 flag=True
