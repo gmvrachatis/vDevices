@@ -223,6 +223,7 @@ def run():
         user_input=input()
         try:
             flag2=flag
+	    flag=None
             exec(user_input,globals())
             if flag2!=flag and (flag =="ON"or flag == "OFF"):
                 client.publish(topics["switches/"+name+"/flag"],"Switch turned manually " +flag)
