@@ -8,6 +8,7 @@ import continuous_threading
 
 
 power=0
+frames_received=0
 
 #CREATE UNiQuE ID
 def get_uid():
@@ -167,15 +168,15 @@ def subscribe_to_feed(client: mqtt_client):
 
 
 def on_message(client, userdata, msg):
-    global power 
+    global power ,frames_received
     topic = msg.topic
         
-
+    #decode only to power usage no need to decode on camera feed (resource saver)
     if topic== "power/used":
-	msg_string = msg.payload.decode()
-        power += float(msg_string)
+        msg_string = msg.payload.decode()
+        power+= float(msg_string)
     else:
-	print("frame_received")
+        frames_received+=1
 
 def connect_mqtt()-> mqtt_client:
 
@@ -227,7 +228,7 @@ def run():
             exec(user_input,globals())
             save()
         except :
-            print("Command  failed "+str(globals()))
+            print("Command  failed ")
     
     
 
@@ -235,3 +236,4 @@ def run():
 
 if __name__ == '__main__':
     run()
+
