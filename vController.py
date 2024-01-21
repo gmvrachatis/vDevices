@@ -169,9 +169,10 @@ def subscribe_to_feed(client: mqtt_client):
 def on_message(client, userdata, msg):
         global power 
         topic = msg.topic
-        msg_string = msg.payload.decode()
+        
 
         if topic== "power/used":
+	    msg_string = msg.payload.decode()
             power += float(msg_string)
         else:
             print("frame_received")
