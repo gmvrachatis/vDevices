@@ -123,17 +123,17 @@ if first_time:
     ap.add_argument("-b", "--broker",required=True, type=str,help="Broker IPv4")
     ap.add_argument("-n", "--name",required=True, type=str,help="Unique name for the switch")
     ap.add_argument("-p", "--port",type=int,help="Broker listening port")
-    ap.add_argument("-r", "--room",type=str,required=True, help="id of the room that the device is located")
-    ap.add_argument("-P", "--power", type=int,default=0, help="Add power in W/s")
-    ap.add_argument("-iP", "--idle_power", type=int,default=0, help="Add power in W/s")
+    ap.add_argument("-r", "--room",type=str,required=True, help="uid or unique name of the room that the device is located")
+    ap.add_argument("-P", "--power", type=int,default=0, help="Add power in W (per sec)")
+    ap.add_argument("-iP", "--idle_power", type=int,default=0, help="Add power in W per s")
 
 else:
     ap.add_argument("-b", "--broker",default=broker, type=str,help="Broker IPv4")
     ap.add_argument("-n", "--name",type=str,help="Unique name for the switch")
     ap.add_argument("-p", "--port",default=port,type=int,help="Broker listening port")
-    ap.add_argument("-r", "--room",type=str,default=room_name , help="id of the room that the device is located")
-    ap.add_argument("-P", "--power", type=int,default=power, help="Add power in W/s")
-    ap.add_argument("-iP", "--idle_power", type=int,default=idle_power, help="Add power in W/s")
+    ap.add_argument("-r", "--room",type=str,default=room_name , help="uid or unique name of the room that the device is located")
+    ap.add_argument("-P", "--power", type=int,default=power, help="Add power in W (per sec)")
+    ap.add_argument("-iP", "--idle_power", type=int,default=idle_power, help="Add power in W (per s)")
 
 
 args = vars(ap.parse_args())
@@ -203,12 +203,12 @@ def on_message(client, userdata, msg):
 def switch(client):
     global flag,power,idle_power
     while True:
-        time.sleep(60)
+        time.sleep(1)
         while flag=="ON":
-            time.sleep(60)
-            client.publish("power/used",60*power)
+            time.sleep(1)
+            client.publish("power/used",power)
             print("Switch is on")
-        client.publish("power/used",60*idle_power)
+        client.publish("power/used",idle_power)
 
 
 def run():
@@ -230,7 +230,6 @@ def run():
                 print("Switch already " + flag)
             else:
                 flag=flag2
-                print("Command  failed ")
             save()  
         except :
             print("Command  failed ")
