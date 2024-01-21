@@ -189,7 +189,7 @@ def on_message(client, userdata, msg):
         topic = msg.topic
         msg_string = msg.payload.decode()
         if topic == topics["topic_room_thermostat"]:
-            client.publish(room_name+"/thermostat/heaters/btu",BTUc)
+            client.publish(room_name+"/thermostat/coolers/btu",BTUc)
         elif topic == topics["topic_coolers"]:
             if msg_string=="ON":
                 flag=True
@@ -210,7 +210,7 @@ def connect_mqtt()-> mqtt_client:
         #Close the device
         global flag
         flag ="OFF"
-        client.publish(room_name+"/thermostat/heaters/btu", -BTUh)
+        client.publish(room_name+"/thermostat/coolers/btu", -BTUc)
         
     # Set Connecting Client ID
     client = mqtt_client.Client(uid)
