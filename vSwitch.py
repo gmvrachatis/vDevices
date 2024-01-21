@@ -201,15 +201,18 @@ def on_message(client, userdata, msg):
 
 
 def switch(client):
-    global flag,power,idle_power
     while True:
         time.sleep(1)
-        while flag=="ON":
+        if flag=="ON":
             time.sleep(1)
             client.publish("power/used",power)
-            print("Switch is on")
-        client.publish("power/used",idle_power)
-
+        elif flag=="OFF":
+            client.publish("power/used",idle_power)
+        else :
+            print("flag is wrong")
+            flag2=flag
+            while flag2==flag:
+                time.sleep(1)
 
 def run():
     global flag
