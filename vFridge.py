@@ -301,7 +301,7 @@ def power_management(client):
     time.sleep(sleep)
     for i in range(zones):
         if freezer[i]==True:
-            client.publish("power/used",sleep*power*0.0001086)
+            client.publish("power/used",sleep*power*0.1141552511415525)
             break
 
 
