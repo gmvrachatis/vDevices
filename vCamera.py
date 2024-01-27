@@ -136,7 +136,7 @@ if first_time==True:
     ap.add_argument("-p", "--port",type=int,help="Broker listening port")
     ap.add_argument("-v", "--video",type=str,default="video.mp4",help="Path Video that gets looped")
     ap.add_argument("-r", "--room",type=str,default=None, help="id of the room that the device is located")
-    ap.add_argument("-P", "--power", type=int,default=0, help="Add power in W/s while running")
+    ap.add_argument("-P", "--power", type=int,default=3, help="Add power in W/s while running")
     ap.add_argument("-a", "--min-area", type=int,default=500, help="minimum area size for movement detection")
     ap.add_argument("-iP", "--idle-power", type=int,default=0, help="Add power in W/s while idle")
     ap.add_argument("-f", "--framerate", type=int,default=60, help="Framerate that the camera records")
@@ -339,7 +339,7 @@ def on_message(client, userdata, msg):
 def power_management(client):
     global power,sleep
     time.sleep(sleep)
-    client.publish("power/used",float(3.6 * 10**6 *power))
+    client.publish("power/used",float(3.6 * 10**6 *power*sleep))
 
 
 
