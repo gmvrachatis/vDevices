@@ -246,7 +246,7 @@ def heat():
     r=1.204 #density of air for 20C
     cp=1007    #Specific heat in constant pressure for air on 20C
     # DISCLOSURE: For simpler calculations we assume that r and cp are constants
-    BTUhs=BTUh/3600 # BTU per h to BTU per s
+    btu_to_watt=BTUh *0.293 # BTU per h to BTU per s
     dt=BTUhs/(r*cp*room_volume)
     return dt
 
@@ -256,7 +256,7 @@ def cold():
     r=1.204 #density of air for 20C
     cp=1005    #Specific heat in constant pressure for air on 20C
     # DISCLOSURE: For simpler calculation we assume that r and cp are constants
-    BTUcs=(BTUc/3600)
+    BTUc_to_watt=BTUc *0.293
      # BTU to KW
     dt=BTUcs/(r*cp*room_volume)
     return -dt
