@@ -204,7 +204,6 @@ def switch(client):
     while True:
         time.sleep(1)
         if flag=="ON":
-            time.sleep(1)
             client.publish("power/used",power)
         elif flag=="OFF":
             client.publish("power/used",idle_power)
