@@ -123,7 +123,7 @@ if first_time:
     ap.add_argument("-r", "--room",type=str,required=True ,help="uid or unique name of the room that the device is located")
     ap.add_argument("-P", "--power", type=int,default=0, help="Add power in W (per sec)")
     ap.add_argument("-s", "--sleep", type=int,default=10, help="number of seconds for sleep of the thermostat")
-    ap.add_argument("-v", "--volume", type=int,default=90, help="Add Room volume for temperature changes calculation (in m^3)")
+    ap.add_argument("-v", "--volume", type=int,default=105, help="Add Room volume for temperature changes calculation (in m^3)")
 else:
     ap.add_argument("-b", "--broker",default=broker, type=str,help="Broker IPv4")
     ap.add_argument("-p", "--port",default=port,type=int,help="Broker listening port")
@@ -265,7 +265,7 @@ def cold():
 def enviromental_temperature(ac_changes,client):
     global env_temperature
     if -10 < env_temperature < 50:
-        weather_deviation = (random.uniform(0, 1) - 0.5)/100
+        weather_deviation = (random.uniform(0, 1) - 0.5)
         env_temperature += weather_deviation + ac_changes
     else:
         env_temperature = random.randint(15,25)
