@@ -265,7 +265,7 @@ def cold():
 def enviromental_temperature(ac_changes,client):
     global env_temperature
     if -10 < env_temperature < 50:
-        weather_deviation = (random.uniform(0, 1) - 0.5)/100000000
+        weather_deviation = (random.uniform(0, 1) - 0.5)/100
         env_temperature += weather_deviation + ac_changes
     else:
         env_temperature = random.randint(15,25)
