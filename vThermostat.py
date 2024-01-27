@@ -123,7 +123,7 @@ if first_time:
     ap.add_argument("-r", "--room",type=str,required=True ,help="uid or unique name of the room that the device is located")
     ap.add_argument("-P", "--power", type=int,default=0, help="Add power in W (per sec)")
     ap.add_argument("-s", "--sleep", type=int,default=10, help="number of seconds for sleep of the thermostat")
-    ap.add_argument("-v", "--volume", type=int,default=20, help="Add Room volume for temperature changes calculation (in m^3)")
+    ap.add_argument("-v", "--volume", type=int,default=90, help="Add Room volume for temperature changes calculation (in m^3)")
 else:
     ap.add_argument("-b", "--broker",default=broker, type=str,help="Broker IPv4")
     ap.add_argument("-p", "--port",default=port,type=int,help="Broker listening port")
@@ -265,7 +265,7 @@ def cold():
 def enviromental_temperature(ac_changes,client):
     global env_temperature
     if -10 < env_temperature < 50:
-        weather_deviation = (random.uniform(0, 1) - 0.5)/1000000000
+        weather_deviation = (random.uniform(0, 1) - 0.5)/100000000
         env_temperature += weather_deviation + ac_changes
     else:
         env_temperature = random.randint(15,25)
@@ -277,12 +277,12 @@ def enviromental_temperature(ac_changes,client):
 def decide_action(client):
     global sleep,env_temperature,flag_mode,desired_Temperature
     if flag_mode == "ON":
-        if  env_temperature < desired_Temperature -0.05:
+        if  env_temperature < desired_Temperature +0.5:
             client.publish(room_name+"/thermostat/coolers/flag", "OFF")  # heat
             client.publish(room_name+"/thermostat/heaters/flag", "ON")
             print("cold = off\n heat = on")
             enviromental_temperature(sleep*heat(),client)
-        elif env_temperature > desired_Temperature+0.05:
+        elif env_temperature > desired_Temperature-0.5:
             client.publish(room_name+"/thermostat/heaters/flag", "OFF")  # cold
             client.publish(room_name+"/thermostat/coolers/flag", "ON")
             print("cold = on \n heat = off")
