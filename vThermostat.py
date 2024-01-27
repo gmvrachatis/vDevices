@@ -14,7 +14,7 @@ env_temperature = 25
 flag_mode="OFF"
 BTUh=0 #For heaters
 BTUc=0 #For coolers
-sleep =60
+sleep=10
 #CREATE UNiQuE ID
 def get_uid():
 	current_datetime = datetime.datetime.now()
@@ -277,12 +277,12 @@ def enviromental_temperature(ac_changes,client):
 def decide_action(client):
     global sleep,env_temperature,flag_mode,desired_Temperature
     if flag_mode == "ON":
-        if  env_temperature < desired_Temperature +0.5:
+        if  env_temperature < desired_Temperature -0.2:
             client.publish(room_name+"/thermostat/coolers/flag", "OFF")  # heat
             client.publish(room_name+"/thermostat/heaters/flag", "ON")
             print("cold = off\n heat = on")
             enviromental_temperature(sleep*heat(),client)
-        elif env_temperature > desired_Temperature-0.5:
+        elif env_temperature > desired_Temperature+0.2:
             client.publish(room_name+"/thermostat/heaters/flag", "OFF")  # cold
             client.publish(room_name+"/thermostat/coolers/flag", "ON")
             print("cold = on \n heat = off")
