@@ -339,7 +339,7 @@ def on_message(client, userdata, msg):
 def power_management(client):
     global power,sleep
     time.sleep(sleep)
-    client.publish("power/used",float(3.6 * 10**6 *power*sleep))
+    client.publish("power/used",float(power*sleep))
 
 
 
