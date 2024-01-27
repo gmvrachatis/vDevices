@@ -235,7 +235,7 @@ def zoneTemperature(freezer,zone):
     global zone_volume,sleep
     if freezer==True:
         r=1.204 #density of air for 20C
-        cp=1005    #Specific heat in constant pressure for air on 20C
+        cp=1007    #Specific heat in constant pressure for air on 20C
         # DISCLOSURE: For simpler calculation we assume that r and cp are constants
         freezer_deviation=-(frezer_power()/(r*cp*zone_volume[zone]))
     else:
