@@ -252,7 +252,7 @@ def zoneTemperature(freezer,zone):
     else:
         freezer_deviation=0
 
-    deviation=random.uniform(0,0.000001)  # needs normal distribution
+    deviation=random.uniform(0,0.1)  # needs normal distribution
 
     zone_Temperature[zone]=zone_Temperature[zone]+sleep*(deviation+freezer_deviation)
     return zone_Temperature[zone]
