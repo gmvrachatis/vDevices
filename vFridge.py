@@ -85,7 +85,7 @@ except IOError:
 
 #create data storing file and reading from it
 filename = 'data.txt'
-variables = ['broker','port','name','power','first_time','room_name','zones','desired_Temperature','zone_volume','power_of_the_zone_idle','sleep'] 
+variables = ['broker','port','name','power','first_time','room_name','zones','desired_Temperature','zone_volume','power_of_the_zone_idle','sleep','idle_power'] 
 
 
 try:
@@ -122,7 +122,10 @@ try:
         power=int(data['power'])
     except:
         power=350
-
+    try:
+        idle_power=int(data['idle_power'])
+    except:
+        idle_power=0    
     room_name=str(data['room_name'])
 
     first_time=bool(data['first_time'])
@@ -150,11 +153,11 @@ except IOError:
 
 def save():
     #Recall changed data
-    global broker,port,name,power,first_time,room_name,zones,desired_Temperature,zone_volume,power_of_the_zone_idle,sleep
+    global broker,port,name,power,first_time,room_name,zones,desired_Temperature,zone_volume,power_of_the_zone_idle,sleep,idle_power
     filename='data.txt'
-    variables = ['broker','port','name','power','first_time','room_name','zones','desired_Temperature','zone_volume','power_of_the_zone_idle','sleep'] 
+    variables = ['broker','port','name','power','first_time','room_name','zones','desired_Temperature','zone_volume','power_of_the_zone_idle','sleep','idle_power'] 
     data_to_save = {}  # Create an empty dictionary to store the variables
-    variables_check = [broker,port,name,power,first_time,room_name,zones,desired_Temperature,zone_volume,power_of_the_zone_idle,sleep]
+    variables_check = [broker,port,name,power,first_time,room_name,zones,desired_Temperature,zone_volume,power_of_the_zone_idle,sleep,idle_power]
     # Get input for each variable and store in the dictionary
     for counter in range(len(variables)):
         if variables[counter]=='zone_Temperature' or variables[counter]=='desired_Temperature' or variables[counter]=='zone_volume' or variables[counter]=='power_of_the_zone_idle' :
@@ -175,6 +178,7 @@ if first_time:
     ap.add_argument("-p", "--port",type=int,default=1883 , help="Broker listening port")
     ap.add_argument("-r", "--room",type=str,help="name of the room that the device is located")
     ap.add_argument("-P", "--power", type=int,default=350, help="Add power in kWh/y")
+    ap.add_argument("-iP", "--idle_power", type=int,default=0, help="Add idle power in W")
     ap.add_argument("-z", "--zones",required=True,help="Number of zones")
     ap.add_argument("-s", "--sleep", type=int,default=10, help="number of seconds between each sleep of the fridge")
     ap.add_argument("-n", "--name",required=True, type=str,help="Unique name for the device")
@@ -202,6 +206,13 @@ try:
     power = int(args["power"])
 except:
     power=power
+
+
+try:
+    idle_power = int(args["idle_power"])
+except:
+    idle_power=idle_power
+
 if args["room"]!=None:
     room_name=args["room"]
 
@@ -267,9 +278,9 @@ def connect_mqtt()-> mqtt_client:
 
 def make_decision(zone):
     global desired_Temperature , zone_Temperature
-    if desired_Temperature[zone] < zone_Temperature[zone]:
+    if desired_Temperature[zone] +0.1 < zone_Temperature[zone]:
         freezer[zone]=True #running
-    elif desired_Temperature[zone]> zone_Temperature[zone]:
+    elif desired_Temperature[zone]-0.1 > zone_Temperature[zone]:
         freezer[zone]=False #not running
     return freezer[zone]
 
@@ -302,8 +313,10 @@ def power_management(client):
     for i in range(zones):
         if freezer[i]==True:
             client.publish("power/used",sleep*power*0.1141552511415525)
+            flag=True
             break
-
+    if flag==True:
+         client.publish("power/used",sleep*idle_*0.1141552511415525)
 
 
 def zoning(client,zone):
