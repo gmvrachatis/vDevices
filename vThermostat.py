@@ -244,7 +244,8 @@ def connect_mqtt()-> mqtt_client:
 def heat():
     global BTUh ,room_volume
     r=1.204 #density of air for 20C
-    cp=1007    #Specific heat in constant pressure for air on 20C
+    cp=1007    #Specific heat in constant pressure for air on 20C\
+    airflow=0.235	#Common ac airflow
     # DISCLOSURE: For simpler calculations we assume that r and cp are constants
     btuh_to_watt=BTUh *0.293 # BTU per h to BTU per s
     dt=btuh_to_watt/(r*cp*room_volume)
@@ -255,6 +256,7 @@ def cold():
     
     r=1.204 #density of air for 20C
     cp=1005    #Specific heat in constant pressure for air on 20C
+    airflow=0.235 	#Common ac airflow
     # DISCLOSURE: For simpler calculation we assume that r and cp are constants
     BTUc_to_watt=BTUc *0.293
      # BTU to KW
