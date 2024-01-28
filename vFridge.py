@@ -308,7 +308,7 @@ def on_message(client, userdata, msg):
     
 
 def power_management(client):
-    global power,sleep
+    global power,sleep,idle_power
     time.sleep(sleep)
     for i in range(zones):
         if freezer[i]==True:
@@ -316,7 +316,7 @@ def power_management(client):
             flag=True
             break
     if flag==True:
-         client.publish("power/used",sleep*idle_*0.1141552511415525)
+         client.publish("power/used",sleep*idle_power)
 
 
 def zoning(client,zone):
