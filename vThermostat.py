@@ -268,11 +268,11 @@ def enviromental_temperature(ac_changes,client):
     global env_temperature
     if -10 < env_temperature < 50:
 	if ac_changes>0 :
-        	weather_deviation = -random.uniform(0, 0.2) 
+        	weather_deviation = -random.uniform(0, 0.1) 
 	elif ac_changes<0 : 
-		weather_deviation = random.uniform(0, 0.2)
+		weather_deviation = random.uniform(0, 0.1)
 	else:
-		weather_deviation = random.uniform(0, 0.4)-0.2
+		weather_deviation = random.uniform(0, 0.2)-0.1
 	env_temperature += weather_deviation + ac_changes
     else:
         env_temperature = random.randint(15,25)
