@@ -247,13 +247,14 @@ def zoneTemperature(freezer,zone):
     if freezer==True:
         r=1.204 #density of air for 20C
         cp=1007    #Specific heat in constant pressure for air on 20C
+        efficiency=0.7
         # DISCLOSURE: For simpler calculation we assume that r and cp are constants
-        freezer_deviation=-(frezer_power()/(r*cp*zone_volume[zone]))
-	deviation=random.uniform(0,freezer_deviation/2)
+        freezer_deviation=-(frezer_power()*efficiency/(r*cp*zone_volume[zone]))
+        deviation=random.uniform(0,-freezer_deviation) 
     else:
         freezer_deviation=0
-	deviation=random.uniform(0,0.002)
-
+        deviation=random.uniform(0,0.005) 
+        
     zone_Temperature[zone]=zone_Temperature[zone]+sleep*(deviation+freezer_deviation)
     return zone_Temperature[zone]
 
@@ -310,6 +311,7 @@ def on_message(client, userdata, msg):
 def power_management(client):
     global power,sleep,idle_power
     time.sleep(sleep)
+    flag=False
     for i in range(zones):
         if freezer[i]==True:
             client.publish("power/used",sleep*power*0.1141552511415525)
@@ -342,7 +344,6 @@ def frezer_power():
             x+=1
 
     return (power*0.0001086)/x
-
 
 
 
@@ -391,6 +392,13 @@ def run():
             except :
                 print("Command  failed ")
             
+        
+    
+    
+
+if __name__ == '__main__':
+    run()
+
         
     
     
