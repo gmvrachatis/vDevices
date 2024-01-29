@@ -245,10 +245,12 @@ def heat():
     global BTUh ,room_volume
     r=1.204 #density of air for 20C
     cp=1007    #Specific heat in constant pressure for air on 20C\
-    airflow=0.235	#Common room airflow
+    cfm=350
+    airflow=cfm*0.000471947#Common room airflow
+    effect=0.75
     # DISCLOSURE: For simpler calculations we assume that r and cp are constants
     btuh_to_watt=BTUh *0.293 # BTU per h to BTU per s
-    dt=(btuh_to_watt*airflow)/(r*cp*room_volume)
+    dt=(btuh_to_watt*airflow*effect)/(r*cp*room_volume)
     return dt
 
 def cold():
@@ -257,10 +259,13 @@ def cold():
     r=1.204 #density of air for 20C
     cp=1005    #Specific heat in constant pressure for air on 20C
     airflow=0.235	#Common room airflow
+    cfm=350
+    airflow=cfm*0.000471947#Common room airflow
+    effect=0.75
     # DISCLOSURE: For simpler calculation we assume that r and cp are constants
     BTUc_to_watt=BTUc *0.293
      # BTU to KW
-    dt=BTUc_to_watt*airflow/(r*cp*room_volume)
+    dt=(BTUc_to_watt*airflow*effect)/(r*cp*room_volume)
     return -dt
 
 
