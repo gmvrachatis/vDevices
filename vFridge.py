@@ -249,10 +249,10 @@ def zoneTemperature(freezer,zone):
         cp=1007    #Specific heat in constant pressure for air on 20C
         # DISCLOSURE: For simpler calculation we assume that r and cp are constants
         freezer_deviation=-(frezer_power()/(r*cp*zone_volume[zone]))
+	deviation=random.uniform(0,freezer_deviation/2)
     else:
         freezer_deviation=0
-
-    deviation=random.uniform(0,0.1)  # needs normal distribution
+	deviation=random.uniform(0,0.002)
 
     zone_Temperature[zone]=zone_Temperature[zone]+sleep*(deviation+freezer_deviation)
     return zone_Temperature[zone]
