@@ -225,14 +225,13 @@ def cooler(client) :
     while True:
       
         time.sleep(1)
-        if flag:
+        if flag==True:
             #generate_heat
             power+=BTUc*3.412141633/3600
             print("working")
         else:
             #go idle
             power+=idle_power
-            print("idle")
         sleep_counter+=1
         if sleep_counter==timer:
             client.publish("power/used", power)
