@@ -8,7 +8,7 @@ import continuous_threading
 
 thermostat_flag =False
 flag=False
-timer=60
+timer=10
 
 #CREATE UNiQuE ID
 def get_uid():
@@ -96,7 +96,7 @@ try:
     try:
         timer=int(data['timer'])
     except:
-        timer=60
+        timer=10
 
 except IOError:
     print("An error occurred while opening or creating the file.")
@@ -114,17 +114,17 @@ ap = argparse.ArgumentParser()
 if first_time:
     ap.add_argument("-b", "--broker",required=True, type=str,help="Broker IPv4")
     ap.add_argument("-p", "--port",type=int,default=1883, help="Broker listening port")
-    ap.add_argument("-r", "--room",type=str,required=True ,help="uid or unique name of the room that the device is located")
+    ap.add_argument("-r", "--room",type=str,required=True ,help="id of the room that the device is located")
     ap.add_argument("-P", "--power", type=int,default=9000, help="Add power in BTU per h")
-    ap.add_argument("-iP", "--idle_power", type=int,default=0, help="Add power in W (per sec)")
-    ap.add_argument("-t", "--timer", type=int,default=60, help="Timer that counts when to send power usage (in sec)")
+    ap.add_argument("-iP", "--idle_power", type=int,default=0, help="Add power in W/h")
+    ap.add_argument("-t", "--timer", type=int,default=10, help="Timer that counts when to send power usage")
 else:
     ap.add_argument("-b", "--broker",default=broker, type=str,help="Broker IPv4")
     ap.add_argument("-p", "--port",default=port,type=int,help="Broker listening port")
-    ap.add_argument("-r", "--room",type=str,default=room_name,help="uid or unique name of the room that the device is located")
-    ap.add_argument("-P", "--power", type=int,default=BTUc, help="Add power in BTU per h")
-    ap.add_argument("-iP", "--idle_power", type=int,default=idle_power, help="Add power in W (per sec)")
-    ap.add_argument("-t", "--timer", type=int,default=timer, help="Timer that counts when to send power usage (in sec)")
+    ap.add_argument("-r", "--room",type=str,default=room_name,help="id of the room that the device is located")
+    ap.add_argument("-P", "--power", type=int,default=BTUc, help="Add power in W/s")
+    ap.add_argument("-iP", "--idle_power", type=int,default=idle_power, help="Add power in W/s")
+    ap.add_argument("-t", "--timer", type=int,default=timer, help="Timer that counts when to send power usage")
 
 args = vars(ap.parse_args())
 
@@ -189,7 +189,7 @@ def on_message(client, userdata, msg):
         topic = msg.topic
         msg_string = msg.payload.decode()
         if topic == topics["topic_room_thermostat"]:
-            client.publish(room_name+"/thermostat/coolers/btu",BTUc)
+            client.publish(room_name+"/thermostat/heaters/btu",BTUc)
         elif topic == topics["topic_coolers"]:
             if msg_string=="ON":
                 flag=True
@@ -207,10 +207,9 @@ def connect_mqtt()-> mqtt_client:
         else:
             print("Failed to connect, return code %d\n", rc)
     def on_disconnect(client, userdata, flags, rc):
-        #Close the device
-        global flag
-        flag ="OFF"
-        client.publish(room_name+"/thermostat/coolers/btu", -BTUc)
+
+        client.publish(topics["power"], -power)
+        client.publish(topics["idle_power"], -idle_power)
         
     # Set Connecting Client ID
     client = mqtt_client.Client(uid)
@@ -229,10 +228,11 @@ def cooler(client) :
         if flag:
             #generate_heat
             power+=BTUc*3.412141633/3600
+            print("working")
         else:
             #go idle
             power+=idle_power
-		
+            print("idle")
         sleep_counter+=1
         if sleep_counter==timer:
             client.publish("power/used", power)
@@ -256,6 +256,14 @@ def run():
             save()
         except :
             print("Command  failed "+str(globals()))
+    
+    
+
+
+
+if __name__ == '__main__':
+    run()
+
     
     
 
