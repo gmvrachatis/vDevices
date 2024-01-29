@@ -9,12 +9,12 @@ import continuous_threading
 
 
 #starting_tmp
-desired_Temperature = 999
+desired_Temperature = 25
 env_temperature = 25
 flag_mode="OFF"
 BTUh=0 #For heaters
 BTUc=0 #For coolers
-sleep=10
+sleep=60
 #CREATE UNiQuE ID
 def get_uid():
 	current_datetime = datetime.datetime.now()
@@ -92,11 +92,11 @@ try:
     try:
         sleep = int(data['sleep'])
     except:
-        sleep = 10 
+        sleep = 600 
     try:
         room_volume= int(data['room_volume'])
     except:
-        room_volume=40
+        room_volume=105
     try:
         power = int(data['power'])
     except:
@@ -245,12 +245,11 @@ def heat():
     global BTUh ,room_volume
     r=1.204 #density of air for 20C
     cp=1007    #Specific heat in constant pressure for air on 20C\
-    cfm=350
-    airflow=cfm*0.000471947#Common room airflow
-    effect=0.75
+    airflow=0.235	#Common room airflow
+    efficiency=0.7
     # DISCLOSURE: For simpler calculations we assume that r and cp are constants
     btuh_to_watt=BTUh *0.293 # BTU per h to BTU per s
-    dt=(btuh_to_watt*airflow*effect)/(r*cp*room_volume)
+    dt=(btuh_to_watt*airflow*efficiency)/(r*cp*room_volume)
     return dt
 
 def cold():
@@ -259,26 +258,24 @@ def cold():
     r=1.204 #density of air for 20C
     cp=1005    #Specific heat in constant pressure for air on 20C
     airflow=0.235	#Common room airflow
-    cfm=350
-    airflow=cfm*0.000471947#Common room airflow
-    effect=0.75
+    efficiency=0.7
     # DISCLOSURE: For simpler calculation we assume that r and cp are constants
     BTUc_to_watt=BTUc *0.293
      # BTU to KW
-    dt=(BTUc_to_watt*airflow*effect)/(r*cp*room_volume)
+    dt=(BTUc_to_watt*airflow*efficiency)/(r*cp*room_volume)
     return -dt
 
 
 def enviromental_temperature(ac_changes,client):
     global env_temperature
     if -10 < env_temperature < 50:
-	if ac_changes>0 :
-        	weather_deviation = -random.uniform(0, 0.1) 
-	elif ac_changes<0 : 
-		weather_deviation = random.uniform(0, 0.1)
-	else:
-		weather_deviation = random.uniform(0, 0.2)-0.1
-	env_temperature += weather_deviation + ac_changes
+        if ac_changes>0 :
+            weather_deviation = -random.uniform(0, -ac_changes) 
+        elif ac_changes<0 : 
+            weather_deviation = random.uniform(0, -ac_changes)
+        else:
+            weather_deviation = random.uniform(-0.02, 0.02)
+        env_temperature += weather_deviation + ac_changes
     else:
         env_temperature = random.randint(15,25)
         print("Temperature have been reset")
@@ -289,12 +286,12 @@ def enviromental_temperature(ac_changes,client):
 def decide_action(client):
     global sleep,env_temperature,flag_mode,desired_Temperature
     if flag_mode == "ON":
-        if  env_temperature < desired_Temperature -0.2:
+        if  env_temperature < desired_Temperature -0.1:
             client.publish(room_name+"/thermostat/coolers/flag", "OFF")  # heat
             client.publish(room_name+"/thermostat/heaters/flag", "ON")
             print("cold = off\n heat = on")
             enviromental_temperature(sleep*heat(),client)
-        elif env_temperature > desired_Temperature+0.2:
+        elif env_temperature > desired_Temperature+0.1:
             client.publish(room_name+"/thermostat/heaters/flag", "OFF")  # cold
             client.publish(room_name+"/thermostat/coolers/flag", "ON")
             print("cold = on \n heat = off")
