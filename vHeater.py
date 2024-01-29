@@ -10,7 +10,7 @@ import continuous_threading
 
 idle_power=0
 flag=False
-timer=60
+timer=10
 
 #CREATE UNiQuE ID
 def get_uid():
@@ -95,7 +95,7 @@ try:
     try:
         timer=int(data['timer'])
     except:
-        timer=60
+        timer=10
 
     first_time=bool(data['first_time'])
     # Perform any necessary operations with the variables
@@ -116,17 +116,17 @@ ap = argparse.ArgumentParser()
 if first_time:
     ap.add_argument("-b", "--broker",required=True, type=str,help="Broker IPv4")
     ap.add_argument("-p", "--port",type=int,default=1883,help="Broker listening port")
-    ap.add_argument("-r", "--room",type=str,required=True ,help="uid or unique name of the room that the device is located")
+    ap.add_argument("-r", "--room",type=str,required=True ,help="id of the room that the device is located")
     ap.add_argument("-P", "--power", type=int,default=9000, help="Add power in BTU per h")
-    ap.add_argument("-iP", "--idle_power", type=int,default=0, help="Add power in W (per sec)")
-    ap.add_argument("-t", "--timer", type=int,default=60, help="Timer that counts when to send power usage (in sec)")
+    ap.add_argument("-iP", "--idle_power", type=int,default=0, help="Add power in W/h")
+    ap.add_argument("-t", "--timer", type=int,default=60, help="Timer that counts when to display power usage")
 else:
     ap.add_argument("-b", "--broker",default=broker, type=str,help="Broker IPv4")
     ap.add_argument("-p", "--port",default=port,type=int,help="Broker listening port")
-    ap.add_argument("-r", "--room",type=str,default=room_name, help="uid or unique name of the room that the device is located")
+    ap.add_argument("-r", "--room",type=str,default=room_name, help="id of the room that the device is located")
     ap.add_argument("-P", "--power", type=int,default=BTUh, help="Add power in BTUh")
-    ap.add_argument("-iP", "--idle_power", type=int,default=0, help="Add power in W (per sec)")
-    ap.add_argument("-t", "--timer", type=int,default=timer, help="Timer that counts when to send power usage (in sec)")
+    ap.add_argument("-iP", "--idle_power", type=int,default=0, help="Add power in W/h")
+    ap.add_argument("-t", "--timer", type=int,default=timer, help="Timer that counts when to display power usage")
 
 args = vars(ap.parse_args())
 
@@ -216,13 +216,12 @@ def heater(client):
     while True:
       
         time.sleep(1)
-        if flag:
+        if flag==True:
             #generate_heat
             power+=BTUh*3.412141633/3600
         else:
             #go idle
             power+=idle_power
-
         sleep_counter+=1
         if sleep_counter==timer:
             client.publish("power/used", power)
